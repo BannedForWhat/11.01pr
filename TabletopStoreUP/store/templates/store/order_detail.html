@@ -1,0 +1,46 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Заказ #{{ order.id }}</h2>
+    <p><strong>Пользователь:</strong> {{ order.user.username }}</p>
+    <p><strong>Статус:</strong> {{ order.status.name }}</p>
+    <p><strong>Сумма:</strong> {{ order.total }} ₽</p>
+    <p><strong>Дата:</strong> {{ order.order_date|date:"d.m.Y H:i" }}</p>
+
+    <h4 class="mt-4">Товары</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Количество</th>
+                <th>Цена</th>
+                <th>Итого</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }} ₽</td>
+                <td>{{ item.total_price|floatformat:2 }} ₽</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if delivery %}
+    <h4 class="mt-4">Доставка</h4>
+    <p><strong>Адрес:</strong> {{ delivery.address }}</p>
+    <p><strong>Метод:</strong> {{ delivery.method.name }}</p>
+    <p><strong>Статус:</strong> {{ delivery.status.name }}</p>
+    {% endif %}
+
+    {% if payment %}
+    <h4 class="mt-4">Платёж</h4>
+    <p><strong>Сумма:</strong> {{ payment.amount }} ₽</p>
+    <p><strong>Статус:</strong> {{ payment.status.name }}</p>
+    <p><strong>Дата:</strong> {{ payment.payment_date|date:"d.m.Y H:i" }}</p>
+    {% endif %}
+</div>
+{% endblock %}

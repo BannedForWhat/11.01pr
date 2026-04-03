@@ -1,0 +1,21 @@
+{% extends "store/base.html" %}
+{% block content %}
+<h1>Импорт каталога</h1>
+<p>Загрузите CSV или JSON. Для CSV используйте поля:
+  <code>id</code> (опц.), <code>name</code>, <code>description</code>, <code>price</code>,
+  <code>stock</code>, <code>genre</code>, <code>player_ranges</code> (пример: <code>2-4;3-6</code>).
+</p>
+
+<form method="post" enctype="multipart/form-data" class="form">
+  {% csrf_token %}
+  <input type="file" name="file" accept=".csv,.json,.tsv,application/json,text/csv" required>
+  <button type="submit" class="btn btn-primary">Импортировать</button>
+</form>
+
+<hr>
+<h2>Экспорт</h2>
+<p>
+  <a class="btn btn-secondary" href="{% url 'store:catalog_export_csv' %}">Скачать CSV</a>
+  <a class="btn btn-secondary" href="{% url 'store:catalog_export_json' %}">Скачать JSON</a>
+</p>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "store/base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm mt-5">
+      <div class="card-body">
+        <h3 class="card-title mb-3 text-center">Регистрация</h3>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
+        </form>
+        <p class="mt-3 text-center">
+          Уже есть аккаунт? <a href="{% url 'store:login' %}">Войти</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

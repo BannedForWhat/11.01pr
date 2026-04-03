@@ -1,0 +1,20 @@
+{% extends 'store/base.html' %}
+
+{% block title %}Оставить отзыв: {{ product.name }}{% endblock %}
+
+{% block content %}
+<h2>Оставить отзыв для "{{ product.name }}"</h2>
+
+<form method="post" class="mt-3">
+    {% csrf_token %}
+    <div class="mb-3">
+        {{ form.rating.label_tag }}
+        {{ form.rating }}
+    </div>
+    <div class="mb-3">
+        {{ form.comment.label_tag }}
+        {{ form.comment }}
+    </div>
+    <button type="submit" class="btn btn-primary">Отправить отзыв</button>
+</form>
+{% endblock %}

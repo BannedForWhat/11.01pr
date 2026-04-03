@@ -1,0 +1,12 @@
+{# templates/store/payment_mock.html #}
+<h3>Оплата заказа #{{ payment.order.id }}</h3>
+<p>Сумма к оплате: <strong>{{ payment.amount }} ₽</strong></p>
+<p>Способ: {{ payment.method.name }}</p>
+
+<form method="post" action="{% url 'store:payment_mock_callback' payment.id %}" class="d-flex gap-2">
+  {% csrf_token %}
+  <button class="btn btn-success" name="outcome" value="success">Оплатить</button>
+  <button class="btn btn-outline-danger" name="outcome" value="fail">Отменить</button>
+</form>
+
+<p class="text-muted mt-3">Это учебная платёжная страница-эмулятор.</p>

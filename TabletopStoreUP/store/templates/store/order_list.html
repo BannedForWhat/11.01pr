@@ -1,0 +1,39 @@
+{% extends 'store/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Список заказов</h2>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped align-middle table-sm minw-720 mt-3">
+          <thead class="table-light">
+              <tr>
+                  <th>ID</th>
+                  <th>Пользователь</th>
+                  <th>Статус</th>
+                  <th>Сумма</th>
+                  <th>Дата</th>
+                  <th class="text-nowrap">Детали</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for order in orders %}
+              <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.user.username }}</td>
+                  <td>{{ order.status.name }}</td>
+                  <td>{{ order.total }} ₽</td>
+                  <td>{{ order.order_date|date:"d.m.Y H:i" }}</td>
+                  <td class="text-nowrap">
+                    <a href="{% url 'store:order_detail' order.id %}" class="btn btn-sm btn-primary">Смотреть</a>
+                  </td>
+              </tr>
+              {% empty %}
+              <tr>
+                  <td colspan="6">Заказы не найдены</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
+</div>
+{% endblock %}

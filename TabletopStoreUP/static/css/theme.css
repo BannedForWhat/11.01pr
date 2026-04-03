@@ -1,0 +1,484 @@
+/* ---- Design tokens (structure/metrics; неизменные) ---- */
+:root {
+  /* радиусы, тени, интервалы */
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --shadow-sm: 0 4px 14px rgba(0,0,0,.08);
+  --shadow:    0 8px 20px rgba(0,0,0,.12);
+  --shadow-lg: 0 12px 28px rgba(0,0,0,.18);
+
+  /* высоты контролов */
+  --control-h: 44px;
+
+  /* типографика */
+  --font-ui: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* все цветовые переменные ниже будут переопределяться темами */
+  --bg: #fff;
+  --bg-muted: #f6f7fb;
+  --surface: #fff;
+  --surface-2: #f9fafc;
+  --text: #111827;
+  --text-soft: #475569;
+  --text-mute: #6b7280;
+
+  --primary: #5f6afc;
+  --primary-contrast: #ffffff;
+  --primary-weak: #e7e9ff;
+
+  --accent: #6E56CF;
+  --accent-ring: rgba(110,86,207,.28);
+
+  --success: #16a34a;
+  --success-weak: #e7f7ea;
+  --danger: #ef4444;
+  --danger-weak: #fde4e4;
+  --warning: #f59e0b;
+
+  --border: rgba(8,18,57,.14);
+  --border-soft: rgba(8,18,57,.08);
+
+  --star-empty: #9aa7bd;
+  --star-filled: #fbbf24;
+}
+
+/* ---- ТЕМА: Светлая ---- */
+.theme-light {
+  --bg: #f3f6fb;
+  --bg-muted: #eef1f8;
+
+  --surface: #ffffff;
+  --surface-2: #fafbfd;
+
+  --text: #0f172a;
+  --text-soft: #334155;
+  --text-mute: #6b7280;
+
+  --primary: #3f51f1;
+  --primary-contrast: #ffffff;
+  --primary-weak: #e7eaff;
+
+  --accent: #6E56CF;
+  --accent-ring: rgba(110,86,207,.25);
+
+  --success: #16a34a;
+  --success-weak: #eaf7ef;
+
+  --danger: #ef4444;
+  --danger-weak: #fde4e4;
+
+  --border: rgba(8,18,57,.16);
+  --border-soft: rgba(8,18,57,.08);
+
+  --star-empty: #94a3b8;
+  --star-filled: #f59e0b;
+}
+
+/* ---- ТЕМА: Тёмная ---- */
+.theme-dark {
+  --bg: #0b0f17;
+  --bg-muted: #0e1421;
+
+  --surface: #111827;
+  --surface-2: #0f1522;
+
+  --text: #e7edfb;
+  --text-soft: #c9d4e5;
+  --text-mute: #9aa7bd;
+
+  --primary: #7581ff;
+  --primary-contrast: #0b0f17;
+  --primary-weak: #1d2340;
+
+  --accent: #6E56CF;
+  --accent-ring: rgba(110,86,207,.30);
+
+  --success: #16c05a;
+  --success-weak: #123524;
+
+  --danger: #ff6b6b;
+  --danger-weak: #3a1515;
+
+  --border: rgba(255,255,255,.14);
+  --border-soft: rgba(255,255,255,.08);
+
+  --star-empty: #475569;
+  --star-filled: #fbbf24;
+}
+
+/* ==============================
+   БАЗА (использует только токены)
+   ============================== */
+
+html, body { height: 100%; }
+body {
+  display: flex; flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+main.page-main { flex: 1 0 auto; }
+footer.site-footer { flex: 0 0 auto; }
+
+.container { max-width: 1180px; }
+
+/* «Карта» вокруг основного контента — чуть заметна в светлой, прозрачна в тёмной */
+.container.page-wrap {
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
+  border: 1px solid var(--border-soft);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  padding: 18px 22px 24px;
+}
+.theme-dark .container.page-wrap {
+  background: transparent; border: 0; box-shadow: none; padding: 0;
+}
+
+/* ==============================
+   Навигация / футер
+   ============================== */
+.navbar {
+  background: var(--surface-2) !important;
+  border-bottom: 1px solid var(--border-soft);
+}
+.navbar .navbar-brand,
+.navbar .nav-link { color: var(--text-soft); }
+.navbar .nav-link:hover { color: var(--text); }
+
+footer.site-footer {
+  background: var(--surface-2);
+  color: var(--text-soft);
+  border-top: 1px solid var(--border-soft);
+}
+
+/* Активный пункт */
+.navbar .nav-link.active,
+.navbar .nav-link[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ==============================
+   Карточки / сетка каталога
+   ============================== */
+.card {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-sm);
+}
+.card.hoverable { transition: transform .12s ease, box-shadow .12s ease; }
+.card.hoverable:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+.card .card-title { color: var(--text); }
+.meta { color: var(--text-mute); }
+.price { font-weight: 700; color: var(--text); }
+
+/* ==============================
+   Формы / инпуты / селекты
+   ============================== */
+.form-control, .form-select {
+  height: var(--control-h);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.form-control::placeholder { color: var(--text-mute); }
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 .2rem var(--accent-ring);
+}
+
+/* Поле поиска — просто модификатор */
+.search-input { height: var(--control-h); }
+
+/* Offcanvas / Modal */
+.offcanvas, .modal-content {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-soft);
+}
+
+/* ==============================
+   Кнопки
+   ============================== */
+.btn { border-radius: 10px; }
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-contrast);
+}
+.btn-primary:hover { filter: brightness(1.06); }
+
+.btn-outline-primary {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: transparent;
+}
+.btn-outline-primary:hover {
+  background: var(--primary);
+  color: var(--primary-contrast);
+}
+
+.btn-success {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+.btn-success:hover { filter: brightness(1.06); }
+
+.btn-outline-secondary {
+  color: var(--text-soft);
+  border-color: var(--border);
+}
+.btn-outline-secondary:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+/* ==============================
+   Кол-во (qty) — степпер
+   ============================== */
+.qty { display:flex; align-items:center; border-radius: var(--radius-xs); overflow:hidden; }
+.qty-input {
+  width: 84px; text-align: center; height: 36px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.qty-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 .2rem var(--accent-ring);
+}
+.qty-btn {
+  width: 36px; height: 36px; line-height: 36px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-soft); cursor: pointer;
+}
+.qty-btn:hover { filter: brightness(1.05); }
+
+/* ==============================
+   Бейджи
+   ============================== */
+.badge { border-radius: 8px; }
+.badge.price-badge {
+  background: var(--primary);
+  color: var(--primary-contrast);
+  padding: .5rem .75rem; font-weight: 700;
+}
+.badge.stock-ok {
+  background: var(--success-weak);
+  color: var(--success);
+  border: 1px solid var(--success);
+  padding: .35rem .55rem;
+}
+.badge.stock-bad {
+  background: var(--danger-weak);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: .35rem .55rem;
+}
+
+/* ==============================
+   Рейтинг
+   ============================== */
+.rating .star { color: var(--star-empty); font-size: 18px; }
+.rating .star.filled { color: var(--star-filled); }
+.rating .rating-meta { color: var(--text-mute); font-size: 14px; margin-left: .5rem; }
+
+/* ==============================
+   Таблицы / списки / пагинация
+   ============================== */
+.table { color: var(--text); }
+.table>:not(caption)>*>* { border-bottom: 1px solid var(--border-soft); }
+
+.list-group-item {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border-soft);
+}
+
+.page-link {
+  color: var(--primary);
+  background: transparent;
+  border-color: var(--border);
+}
+.page-item.active .page-link {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-contrast);
+}
+
+/* ==============================
+   FAB корзины и тосты
+   ============================== */
+.cart-fab {
+  position: fixed; right: 20px; bottom: 22px; z-index: 1040;
+  display:flex; align-items:center; gap:.6rem;
+  background: linear-gradient(180deg, var(--accent), #5b47c2);
+  color: #fff; padding:.7rem .95rem; border-radius: 999px;
+  box-shadow: var(--shadow-lg); text-decoration: none;
+}
+.cart-fab .bi { font-size: 18px; }
+.cart-fab:hover { transform: translateY(-1px); color:#fff; }
+
+.toast-stack {
+  position: fixed; right: 20px; top: 20px; z-index: 1050; display: grid; gap: .5rem;
+}
+.toast-like {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: .6rem .8rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+
+/* ==============================
+   Утилиты
+   ============================== */
+.text-soft  { color: var(--text-soft) !important; }
+.text-mute  { color: var(--text-mute) !important; }
+.border-soft{ border-color: var(--border-soft) !important; }
+
+
+/* ====== Layout ====== */
+.container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+/* Простая сетка каталога */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: 1fr;          /* Мобайл (xs) */
+  gap: 1rem;
+}
+
+/* Карточка товара */
+.card {
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  padding: .75rem;
+/*  background: var(--card-bg, #fff); */
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  display: flex;
+  flex-direction: column;
+}
+.card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block; /* убираем «щели» под картинкой */
+}
+.card .title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: .5rem 0 .25rem;
+}
+.card .price {
+  font-weight: 700;
+  margin-top: .25rem;
+}
+.card .actions {
+  margin-top: auto;
+  display: flex;
+  gap: .5rem;
+}
+
+/* Обёртка для таблиц на узких экранах */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: .5rem .75rem;
+  text-align: left;
+}
+
+/* Навигация (бургер) */
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .75rem 0;
+}
+.navbar .brand {
+  font-weight: 800;
+}
+.navbar .spacer {
+  flex: 1;
+}
+.navbar .menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+.navbar .links {
+  display: none;          /* xs: скрыто */
+  gap: 1rem;
+}
+.navbar .links a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ====== Breakpoints ======
+   xs: < 600px  (по умолчанию)
+   sm: ≥ 600px
+   md: ≥ 900px
+   lg: ≥ 1200px
+   Можно подогнать под ваши нужды
+*/
+
+/* ≥ 600px (sm) — 2 колонки в каталоге, показываем меню горизонтально */
+@media (min-width: 600px) {
+  .catalog-grid { grid-template-columns: repeat(2, 1fr); }
+  .navbar .links { display: flex; }
+  .navbar .menu-btn { display: none; }
+}
+
+/* ≥ 900px (md) — 3 колонки */
+@media (min-width: 900px) {
+  .catalog-grid { grid-template-columns: repeat(3, 1fr); }
+  .card .title { font-size: 1.05rem; }
+}
+
+/* ≥ 1200px (lg) — 4 колонки */
+@media (min-width: 1200px) {
+  .catalog-grid { grid-template-columns: repeat(4, 1fr); }
+  .container { max-width: 1280px; }
+}
+
+/* ===== Дополнительно: адаптивные отступы и кнопки ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: .5rem .9rem; border: 1px solid #0ea5e9; color: #0ea5e9;
+  border-radius: 10px; background: #fff; cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+}
+.btn:hover { background: #0ea5e9; color: #fff; }
+.btn-primary { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+.btn-primary:hover { filter: brightness(.95); }
+
+/* Утилиты */
+.mt-1{ margin-top:.25rem } .mt-2{ margin-top:.5rem } .mt-3{ margin-top:.75rem }
+.gap-1{ gap:.25rem } .gap-2{ gap:.5rem } .gap-3{ gap:.75rem }
+.hidden{ display:none }

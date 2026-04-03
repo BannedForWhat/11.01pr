@@ -1,0 +1,10 @@
+/venv
+TabletopStoreUP/.env
+/TabletopStoreUP/backups
+
+__pycache__/
+*.py[cod]
+*.pyc
+/staticfiles
+TabletopStoreUP/staticfiles
+TabletopStoreUP/media

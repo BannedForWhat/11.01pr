@@ -1,0 +1,17 @@
+{% extends "store/base.html" %}
+{% block content %}
+<h1>Результат импорта</h1>
+<ul>
+  <li>Создано: {{ created }}</li>
+  <li>Обновлено: {{ updated }}</li>
+</ul>
+
+{% if errors and errors|length %}
+  <h3>Ошибки</h3>
+  <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+{% else %}
+  <p>Ошибок нет ✅</p>
+{% endif %}
+
+<p><a href="{% url 'store:catalog_import' %}">Назад к импорту</a></p>
+{% endblock %}

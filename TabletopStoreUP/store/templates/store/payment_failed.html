@@ -1,0 +1,5 @@
+{# templates/store/payment_failed.html #}
+<div class="alert alert-danger mt-3">
+  Оплата не прошла для заказа #{{ order.id }}.
+</div>
+<a href="{% url 'store:order_list' %}" class="btn btn-outline-primary">К заказам</a>

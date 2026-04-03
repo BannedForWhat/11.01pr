@@ -1,0 +1,186 @@
+{% extends "store/base.html" %}
+{% load static %}
+
+{% block title %}Каталог — Магазин настольных игр{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <form class="d-flex flex-grow-1" method="get" action="{% url 'store:product_list' %}">
+    <input class="form-control me-2" type="search" placeholder="Поиск игр…" name="q" value="{{ current.q }}" id="searchInput">
+    {# сохраняем прочие фильтры при поиске #}
+    {% for k,v in request.GET.items %}
+      {% if k != 'q' and k != 'page' %}
+        <input type="hidden" name="{{ k }}" value="{{ v }}">
+      {% endif %}
+    {% endfor %}
+    <button class="btn btn-outline-secondary" type="submit">Найти</button>
+  </form>
+
+  <button class="btn btn-outline-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#filters">
+    Фильтры
+  </button>
+
+  <form method="post" action="{% url 'store:update_page_size' %}" class="ms-2">
+    {% csrf_token %}
+    <select name="page_size" class="form-select form-select-sm" onchange="this.form.submit()">
+      {% for n in page_sizes %}
+        <option value="{{ n }}"
+          {% if request.user.is_authenticated and request.user.settings.page_size == n %}
+            selected
+          {% endif %}
+        >{{ n }} на страницу</option>
+      {% endfor %}
+    </select>
+  </form>
+
+  <a href="{{ save_filters_url }}?{{ request.GET.urlencode }}" class="btn btn-outline-secondary">Сохранить фильтры</a>
+  <a href="{{ apply_filters_url }}" class="btn btn-outline-secondary">Применить сохранённые</a>
+
+
+  <form method="get" class="ms-auto">
+    {# сортировка #}
+    {% for k,v in request.GET.items %}
+      {% if k != 'sort' and k != 'page' %}
+        <input type="hidden" name="{{ k }}" value="{{ v }}">
+      {% endif %}
+    {% endfor %}
+    <select class="form-select" name="sort" onchange="this.form.submit()">
+      <option value="new" {% if current.sort == 'new' %}selected{% endif %}>Сначала новые</option>
+      <option value="popular" {% if current.sort == 'popular' %}selected{% endif %}>Популярные</option>
+      <option value="price_asc" {% if current.sort == 'price_asc' %}selected{% endif %}>Цена ↑</option>
+      <option value="price_desc" {% if current.sort == 'price_desc' %}selected{% endif %}>Цена ↓</option>
+      <option value="rating_desc" {% if current.sort == 'rating_desc' %}selected{% endif %}>Рейтинг ↓</option>
+      <option value="rating_asc" {% if current.sort == 'rating_asc' %}selected{% endif %}>Рейтинг ↑</option>
+    </select>
+  </form>
+</div>
+
+{% if has_active_filters %}
+  <div class="mb-3">
+    <span class="me-2 text-muted">Активные фильтры:</span>
+    {% if current.genre %}<span class="badge text-bg-secondary">Жанр</span>{% endif %}
+    {% if current.in_stock %}<span class="badge text-bg-secondary">В наличии</span>{% endif %}
+    {% if current.price_min or current.price_max %}<span class="badge text-bg-secondary">Цена</span>{% endif %}
+    {% if current.rating_min %}<span class="badge text-bg-secondary">Рейтинг ≥ {{ current.rating_min }}</span>{% endif %}
+    {% if current.players %}<span class="badge text-bg-secondary">Игроки</span>{% endif %}
+    <a class="btn btn-sm btn-link ms-2" href="{{ reset_url }}">Сбросить</a>
+  </div>
+{% endif %}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-3">
+  {% for p in products %}
+  <div class="col">
+    <div class="card h-100">
+      {% if p.image %}
+        <img src="{{ p.image.url }}" class="card-img-top" alt="{{ p.name }}">
+      {% endif %}
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title mb-1">{{ p.name }}</h5>
+        <div class="small text-muted mb-2">{{ p.genre.name }}</div>
+        <p class="card-text flex-grow-1">{{ p.description|truncatewords:20 }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+  <span class="fw-bold">{{ p.price }} ₽</span>
+  <span class="badge {% if p.stock > 0 %}text-bg-success{% else %}text-bg-secondary{% endif %}">
+    {% if p.stock > 0 %}В наличии{% else %}Нет{% endif %}
+  </span>
+</div>
+
+<div class="mt-2">⭐ {{ p.avg_rating|default:"—" }}</div>
+
+        <div class="d-flex gap-2 actions mt-3">
+          {% if p.stock|default:0 > 0 %}
+            <a class="btn btn-sm btn-success add-to-cart" href="{% url 'store:cart_add_gate' p.id %}?qty=1">
+              В корзину
+            </a>
+          {% else %}
+            <button class="btn btn-sm btn-secondary" disabled>Нет в наличии</button>
+          {% endif %}
+          <a class="btn btn-sm btn-outline-primary" href="{% url 'store:product_detail' p.pk %}">Подробнее</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+    <p class="text-muted">Ничего не найдено. Попробуйте изменить запрос или фильтры.</p>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+  <nav class="mt-4 d-flex justify-content-between">
+    <a
+      class="btn btn-outline-secondary {% if not prev_page_url %}disabled{% endif %}"
+      href="{{ prev_page_url|default:'#' }}"
+    >← Назад</a>
+
+    <a
+      class="btn btn-outline-secondary {% if not next_page_url %}disabled{% endif %}"
+      href="{{ next_page_url|default:'#' }}"
+    >Вперёд →</a>
+  </nav>
+{% endif %}
+
+{# Offcanvas фильтров (id="filters" для хоткея 'f') #}
+<div class="offcanvas offcanvas-end" tabindex="-1" id="filters" aria-labelledby="filtersLabel">
+  <div class="offcanvas-header">
+    <h5 id="filtersLabel">Фильтры</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <form method="get" action="{% url 'store:product_list' %}">
+      <div class="mb-3">
+        <label class="form-label">Жанр</label>
+        <select class="form-select" name="genre">
+          <option value="">Любой</option>
+          {% for g in genres %}
+            <option value="{{ g.id }}" {% if current.genre|add:'' == g.id|add:'' %}selected{% endif %}>{{ g.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Цена (₽)</label>
+        <div class="d-flex gap-2">
+          <input type="number" class="form-control" name="price_min" placeholder="от" value="{{ current.price_min }}">
+          <input type="number" class="form-control" name="price_max" placeholder="до" value="{{ current.price_max }}">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Рейтинг минимум</label>
+        <select class="form-select" name="rating_min">
+          <option value="">Не важно</option>
+          {% for r in "12345"|make_list %}
+            <option value="{{ r }}" {% if current.rating_min == r %}selected{% endif %}>{{ r }}+</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Количество игроков</label>
+        <select class="form-select" name="players" multiple size="5">
+          {% for pr in player_ranges %}
+            <option value="{{ pr.id }}" {% if pr.id|stringformat:'s' in current.players %}selected{% endif %}>
+              {{ pr.min_players }}–{{ pr.max_players }}
+            </option>
+          {% endfor %}
+        </select>
+        <div class="form-text">Можно выбрать несколько диапазонов (Ctrl/⌘ + клик).</div>
+      </div>
+
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" value="1" id="inStock" name="in_stock" {% if current.in_stock == '1' %}checked{% endif %}>
+        <label class="form-check-label" for="inStock">Только в наличии</label>
+      </div>
+
+      {# сохраняем q и sort при применении фильтров #}
+      {% if current.q %}<input type="hidden" name="q" value="{{ current.q }}">{% endif %}
+      {% if current.sort %}<input type="hidden" name="sort" value="{{ current.sort }}">{% endif %}
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" type="submit">Применить</button>
+        <a class="btn btn-outline-secondary" href="{{ reset_url }}">Сбросить</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
